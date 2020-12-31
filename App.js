@@ -1,8 +1,11 @@
 import React from 'react';
 import LoginScreen from './Screens/LoginScreen';
 import StockListScreen from './Screens/StockListScreen';
+import {createStackNavigator} from '@react-navigation/stack';
+import {NavigationContainer} from '@react-navigation/native';
 
 const AuthContext = React.createContext();
+const Stack = createStackNavigator();
 
 const App = () => {
   const [state, dispatch] = React.useReducer(
@@ -45,7 +48,15 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={authContext}>
-      <LoginScreen />
+      <NavigationContainer>
+        <Stack.Navigator>
+          {state.userAccessToken == null ? (
+            <Stack.Screen name="Login" component={LoginScreen} />
+          ) : (
+            <Stack.Screen name="StockList" component={StockListScreen} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
     </AuthContext.Provider>
   );
 };
