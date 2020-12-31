@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Button} from 'react-native';
 
-const LoginScreen = () => {
+const StockListScreen = () => {
   return (
     <View>
       <Button title="Login With WealthSimple" />
@@ -9,7 +9,7 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default StockListScreen;
 
 // stack navigator for clicking on stocks
 // when navigating can just pass in param to route
