@@ -1,10 +1,34 @@
 import React from 'react';
-import {View, Button} from 'react-native';
+import {View, Button, TextInput} from 'react-native';
+import {AuthContext} from '../AuthContext';
 
 const LoginScreen = () => {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
   return (
     <View>
-      <Button title="Login With WealthSimple" />
+      <TextInput
+        autoCompleteType="email"
+        placeholder="Email"
+        onChangeText={setEmail}
+      />
+      <TextInput
+        secureTextEntry
+        autoCompleteType="password"
+        placeholder="Password"
+        onChangeText={setPassword}
+      />
+      <AuthContext.Consumer>
+        {(data) => (
+          <Button
+            title="Login With WealthSimple"
+            onPress={async () => {
+              await data.signIn(email, password);
+            }}
+          />
+        )}
+      </AuthContext.Consumer>
     </View>
   );
 };

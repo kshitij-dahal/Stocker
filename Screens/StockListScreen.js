@@ -4,7 +4,7 @@ import {View, Button} from 'react-native';
 const StockListScreen = () => {
   return (
     <View>
-      <Button title="Login With WealthSimple" />
+      <Button title="Were at stocklist" />
     </View>
   );
 };

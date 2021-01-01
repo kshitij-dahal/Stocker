@@ -3,8 +3,8 @@ import LoginScreen from './Screens/LoginScreen';
 import StockListScreen from './Screens/StockListScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
+import {AuthContext} from './AuthContext';
 
-const AuthContext = React.createContext();
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -36,10 +36,13 @@ const App = () => {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async (data) => {
+      signIn: async (email, password) => {
         // try login
-        const responseTokens = 0;
-        dispatch({type: 'SIGN_IN', accessToken: responseTokens.accessToken});
+        const responseTokens = {accessToken: 0};
+
+        if (email !== undefined) {
+          dispatch({type: 'SIGN_IN', accessToken: responseTokens.accessToken});
+        }
       },
       signOut: () => dispatch({type: 'SIGN_OUT'}),
     }),
