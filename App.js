@@ -5,6 +5,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {AuthContext} from './AuthContext';
 import OTPScreen from './Screens/OTPScreen';
+import {loginUser} from './APIConnectors/WealthSimpleConnector';
 
 const Stack = createStackNavigator();
 
@@ -49,32 +50,36 @@ const App = () => {
     },
   );
 
-  const authContext = React.useMemo(
-    () => ({
-      signIn: async (email, password) => {
-        // try login
-        const responseTokens = {accessToken: 0};
+  const authContext = {
+    signIn: async (email, password) => {
+      // try login
+      let response = await loginUser({"email": email, "password": password});
+      console.log('response ho ');
+      console.log(email);
+      console.log(password);
+      console.log(response);
+      if (response.success) {
+        dispatch({type: 'SIGN_IN', email: email, password: password});
+        return true;
+      }
+      return false;
+    },
+    signInWithOtp: async (otp) => {
+      // try login
+      let response = await loginUser({
+        email: state.email,
+        password: state.password,
+        otp: otp,
+      });
 
-        if (email !== undefined) {
-          await dispatch({type: 'SIGN_IN', email: email, password: password});
-          return true;
-        }
-        return false;
-      },
-      signInWithOtp: async (otp) => {
-        // try login
-        const responseTokens = {accessToken: 0};
-
-        if (otp !== undefined) {
-          await dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
-          return true;
-        }
-        return false;
-      },
-      signOut: () => dispatch({type: 'SIGN_OUT'}),
-    }),
-    [],
-  );
+      if (response.success) {
+        await dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
+        return true;
+      }
+      return false;
+    },
+    signOut: () => dispatch({type: 'SIGN_OUT'}),
+  };
 
   const screens = {
     auth: {
