@@ -6,6 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {AuthContext} from './AuthContext';
 import OTPScreen from './Screens/OTPScreen';
 import {loginUser} from './APIConnectors/WealthSimpleConnector';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,12 @@ const App = () => {
     },
   );
 
+  React.useEffect(async () => {
+    try {
+      let token = JSON.parse(await AsyncStorage.getItem('tokens'));
+    } catch (e) {}
+  }, []);
+
   const authContext = {
     signIn: async (email, password) => {
       // try login
@@ -60,9 +67,8 @@ const App = () => {
       console.log(response);
       if (response.success) {
         dispatch({type: 'SIGN_IN', email: email, password: password});
-        return true;
       }
-      return false;
+      return response;
     },
     signInWithOtp: async (otp) => {
       // try login

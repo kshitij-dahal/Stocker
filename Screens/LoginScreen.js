@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Button, TextInput} from 'react-native';
+import {View, Button, TextInput, Alert} from 'react-native';
 import {AuthContext} from '../AuthContext';
 
 const LoginScreen = ({navigation}) => {
@@ -12,12 +12,14 @@ const LoginScreen = ({navigation}) => {
         autoCompleteType="email"
         placeholder="Email"
         onChangeText={setEmail}
+        value={email}
       />
       <TextInput
         secureTextEntry
         autoCompleteType="password"
         placeholder="Password"
         onChangeText={setPassword}
+        value={password}
       />
       <AuthContext.Consumer>
         {(data) => (
@@ -25,10 +27,22 @@ const LoginScreen = ({navigation}) => {
             title="Login With WealthSimple"
             onPress={async () => {
               let result = await data.signIn(email, password);
-              if (result) {
+              if (result.success) {
+                setEmail('');
+                setPassword('');
                 navigation.navigate('OTP');
               } else {
-                console.log(' login error ');
+                if (result.status === 400) {
+                  Alert.alert(
+                    'Incorrect Login Information',
+                    'Please enter correct login credentials.',
+                    [{text: 'OK'}],
+                  );
+                } else {
+                  Alert.alert('Server Error', 'Please try again later.', [
+                    {text: 'OK'},
+                  ]);
+                }
               }
             }}
           />

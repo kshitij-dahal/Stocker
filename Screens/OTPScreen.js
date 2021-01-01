@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, TextInput, Button} from 'react-native';
+import {View, TextInput, Button, Alert} from 'react-native';
 import {AuthContext} from '../AuthContext';
 
 const OTPScreen = ({navigation}) => {
@@ -20,6 +20,13 @@ const OTPScreen = ({navigation}) => {
             title="Continue W OTP"
             onPress={async () => {
               let result = await data.signInWithOtp(otp);
+              if (!result) {
+                Alert.alert(
+                  'Incorrect OTP',
+                  'Please enter the correct OTP sent to your Email',
+                  [{text: 'OK'}],
+                );
+              }
             }}
           />
         )}
