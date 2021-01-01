@@ -53,7 +53,7 @@ const App = () => {
   const authContext = {
     signIn: async (email, password) => {
       // try login
-      let response = await loginUser({"email": email, "password": password});
+      let response = await loginUser({email: email, password: password});
       console.log('response ho ');
       console.log(email);
       console.log(password);
