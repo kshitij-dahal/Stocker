@@ -66,7 +66,7 @@ const App = () => {
         const responseTokens = {accessToken: 0};
 
         if (otp !== undefined) {
-          await dispatch({type: 'SIGN_IN_W_OTP', otp: otp});
+          await dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
           return true;
         }
         return false;
