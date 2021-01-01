@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Button, TextInput} from 'react-native';
 import {AuthContext} from '../AuthContext';
 
-const LoginScreen = () => {
+const LoginScreen = ({navigation}) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
@@ -24,7 +24,12 @@ const LoginScreen = () => {
           <Button
             title="Login With WealthSimple"
             onPress={async () => {
-              await data.signIn(email, password);
+              let result = await data.signIn(email, password);
+              if (result) {
+                navigation.navigate('OTP');
+              } else {
+                console.log(' login error ');
+              }
             }}
           />
         )}
