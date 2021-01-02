@@ -9,6 +9,7 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
+import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
 
 const Item = ({item, onPress, style}) => (
@@ -19,7 +20,9 @@ const Item = ({item, onPress, style}) => (
 
 const StockListScreen = () => {
   const [selectedId, setSelectedId] = React.useState(null);
-  const [portfolioData, setPortfolioData] = React.useState([]);
+  const [portfolioStocks, setPortfolioStocks] = React.useState([]);
+  const [displayedStocks, setDisplayedStocks] = React.useState([]);
+  const [searchText, setSearchText] = React.useState('');
 
   const renderItem = ({item}) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
@@ -38,15 +41,32 @@ const StockListScreen = () => {
       const data = await getPortfolio();
       console.log('got it here');
       console.log(data);
-      setPortfolioData(data.portfolio);
+      setPortfolioStocks(data.portfolio);
+      setDisplayedStocks(JSON.parse(JSON.stringify(data.portfolio)));
     };
     getPortfolioData();
   }, []);
 
+  useEffect(() => {
+    const newDisplayedStocks = JSON.parse(
+      JSON.stringify(
+        portfolioStocks.filter((stock) =>
+          stock.symbol.toLowerCase().includes(searchText.toLowerCase()),
+        ),
+      ),
+    );
+    setDisplayedStocks(newDisplayedStocks);
+  }, [portfolioStocks, searchText]);
+
   return (
     <SafeAreaView>
+      <SearchBar
+        placeholder="Type Here..."
+        onChangeText={setSearchText}
+        value={searchText}
+      />
       <FlatList
-        data={portfolioData}
+        data={displayedStocks}
         renderItem={renderItem}
         keyExtractor={(item) => item.symbol}
         extraData={selectedId}
