@@ -13,8 +13,16 @@ import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
 
 const Item = ({item, onPress, style}) => (
-  <TouchableOpacity onPress={onPress}>
-    <Text>{item.symbol}</Text>
+  <TouchableOpacity
+    onPress={onPress}
+    style={{
+      padding: 20,
+      margin: 1,
+      borderTopWidth: 1,
+      borderColor: '#3D4B56',
+      backgroundColor: '#759982',
+    }}>
+    <Text style={{color: 'white'}}>{item.symbol}</Text>
   </TouchableOpacity>
 );
 
@@ -56,22 +64,24 @@ const StockListScreen = () => {
       ),
     );
     setDisplayedStocks(newDisplayedStocks);
-  }, [portfolioStocks, searchText]);
+  }, [searchText]);
 
   return (
-    <SafeAreaView>
-      <SearchBar
-        placeholder="Type Here..."
-        onChangeText={setSearchText}
-        value={searchText}
-      />
-      <FlatList
-        data={displayedStocks}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.symbol}
-        extraData={selectedId}
-      />
-    </SafeAreaView>
+    <View style={{backgroundColor: '#3D4B56', flex: 1}}>
+      <SafeAreaView>
+        <SearchBar
+          placeholder="Type Here..."
+          onChangeText={setSearchText}
+          value={searchText}
+        />
+        <FlatList
+          data={displayedStocks}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.symbol}
+          extraData={selectedId}
+        />
+      </SafeAreaView>
+    </View>
   );
 };
 
