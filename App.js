@@ -51,9 +51,11 @@ const App = () => {
     },
   );
 
-  React.useEffect(async () => {
+  React.useEffect(() => {
     try {
-      let token = JSON.parse(await AsyncStorage.getItem('tokens'));
+      let token = async () => {
+        return JSON.parse(AsyncStorage.getItem('tokens'));
+      };
     } catch (e) {}
   }, []);
 

@@ -1,11 +1,57 @@
 import React from 'react';
-import {View, Button} from 'react-native';
+import {useEffect} from 'react';
+import {
+  SafeAreaView,
+  View,
+  FlatList,
+  StyleSheet,
+  Text,
+  StatusBar,
+  TouchableOpacity,
+} from 'react-native';
+import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
+
+const Item = ({item, onPress, style}) => (
+  <TouchableOpacity onPress={onPress}>
+    <Text>{item.symbol}</Text>
+  </TouchableOpacity>
+);
 
 const StockListScreen = () => {
+  const [selectedId, setSelectedId] = React.useState(null);
+  const [portfolioData, setPortfolioData] = React.useState([]);
+
+  const renderItem = ({item}) => {
+    const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
+
+    return (
+      <Item
+        item={item}
+        onPress={() => setSelectedId(item.symbol)}
+        style={{backgroundColor}}
+      />
+    );
+  };
+
+  useEffect(() => {
+    const getPortfolioData = async () => {
+      const data = await getPortfolio();
+      console.log('got it here');
+      console.log(data);
+      setPortfolioData(data.portfolio);
+    };
+    getPortfolioData();
+  }, []);
+
   return (
-    <View>
-      <Button title="Were at stocklist" />
-    </View>
+    <SafeAreaView>
+      <FlatList
+        data={portfolioData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.symbol}
+        extraData={selectedId}
+      />
+    </SafeAreaView>
   );
 };
 
