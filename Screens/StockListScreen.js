@@ -27,7 +27,7 @@ const Item = ({item, onPress, style}) => (
   </TouchableOpacity>
 );
 
-const StockListScreen = () => {
+const StockListScreen = ({navigation}) => {
   const [selectedId, setSelectedId] = React.useState(null);
   const [portfolioStocks, setPortfolioStocks] = React.useState([]);
   const [displayedStocks, setDisplayedStocks] = React.useState([]);
@@ -41,12 +41,15 @@ const StockListScreen = () => {
         item={item}
         onPress={async () => {
           setSelectedId(item.symbol);
-          console.log(await getStockData(item.symbol));
+          const data = await getStockData(item.symbol);
+          navigation.navigate('StockData', {
+            data: data,
+          });
         }}
         style={{backgroundColor}}
       />
     );
-  };
+  }
 
   useEffect(() => {
     const getPortfolioData = async () => {

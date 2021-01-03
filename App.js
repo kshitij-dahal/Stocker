@@ -7,6 +7,7 @@ import {AuthContext} from './AuthContext';
 import OTPScreen from './Screens/OTPScreen';
 import {loginUser} from './APIConnectors/WealthSimpleConnector';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import StockDataScreen from "./Screens/StockDataScreen";
 
 const Stack = createStackNavigator();
 
@@ -96,6 +97,7 @@ const App = () => {
     },
     user: {
       StockList: StockListScreen,
+      StockData: StockDataScreen,
     },
   };
 
