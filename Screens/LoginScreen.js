@@ -1,82 +1,104 @@
 import React from 'react';
-import {View,  TouchableOpacity, TextInput, Alert, StyleSheet, Text} from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  StyleSheet,
+  Text,
+} from 'react-native';
 import {AuthContext} from '../AuthContext';
 import {ThemeContext} from '../ThemeContext';
 import LinearGradient from 'react-native-linear-gradient';
-import { buttons, text, inputBox } from './styles'
+import {buttons, text, inputBox} from './styles';
+import Dialog from 'react-native-dialog';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [dialogInfo, setDialogInfo] = React.useState({
+    title: '',
+    description: '',
+    btnLabel: '',
+    visible: false,
+  });
 
   return (
     <ThemeContext.Consumer>
       {(theme) => (
-      <View style={theme.background}>
-        <LinearGradient
-        //theme.colors.background rgb(149, 163, 173)
-          colors={[theme.colors.background, '#979899']}
-          style={theme.linearGradient}
-          start={{ x: 0.5, y: 0 }}
-          end={{ x: 0.5, y: 1 }}
-        >
-          <TextInput style={inputBox.textBox}
-            autoCompleteType="email"
-            placeholder="Email"
-            onChangeText={setEmail}
-            underlineColorAndroid='white'
-            placeholderTextColor='black'
-            value={email}
-            textAlign={"left"}
-          />
-          <TextInput style={inputBox.textBox}
-            secureTextEntry
-            autoCompleteType="password"
-            placeholder="Password"
-            underlineColorAndroid='white'
-            placeholderTextColor='black'
-            onChangeText={setPassword}
-            value={password}
-            textAlign={"left"}
-          />
-          <AuthContext.Consumer>
-            {(data) => (
-              <View style={theme.view}>
-                <TouchableOpacity 
-                  style={buttons.wealthsimpleButton}
-                  onPress={async () => {
-                    let result = await data.signIn(email, password);
-                    if (result.success) {
-                      setEmail('');
-                      setPassword('');
-                      navigation.navigate('OTP');
-                    } else {
-                      if (result.status === 400) {
-                        Alert.alert(
-                          'Incorrect Login Information',
-                          'Please enter correct login credentials.',
-                          [{text: 'OK'}],
-                        );
+        <View style={theme.background}>
+          <LinearGradient
+            //theme.colors.background rgb(149, 163, 173)
+            colors={[theme.colors.background, '#979899']}
+            style={theme.linearGradient}
+            start={{x: 0.5, y: 0}}
+            end={{x: 0.5, y: 1}}>
+            <Dialog.Container visible={dialogInfo.visible}>
+              <Dialog.Title>{dialogInfo.title}</Dialog.Title>
+              <Dialog.Description>{dialogInfo.description}</Dialog.Description>
+              <Dialog.Button label={dialogInfo.btnLabel} onPress={ () => setDialogInfo({...dialogInfo,visible:false})} />
+            </Dialog.Container>
+            <TextInput
+              style={inputBox.textBox}
+              autoCompleteType="email"
+              placeholder="Email"
+              onChangeText={setEmail}
+              underlineColorAndroid="white"
+              placeholderTextColor="black"
+              value={email}
+              textAlign={'left'}
+            />
+            <TextInput
+              style={inputBox.textBox}
+              secureTextEntry
+              autoCompleteType="password"
+              placeholder="Password"
+              underlineColorAndroid="white"
+              placeholderTextColor="black"
+              onChangeText={setPassword}
+              value={password}
+              textAlign={'left'}
+            />
+            <AuthContext.Consumer>
+              {(data) => (
+                <View style={theme.view}>
+                  <TouchableOpacity
+                    style={buttons.wealthsimpleButton}
+                    onPress={async () => {
+                      let result = await data.signIn(email, password);
+                      if (result.success) {
+                        setEmail('');
+                        setPassword('');
+                        navigation.navigate('OTP');
                       } else {
-                        Alert.alert('Server Error', 'Please try again later.', [
-                          {text: 'OK'},
-                        ]);
+                        if (result.status === 400) {
+                          setDialogInfo({
+                            title: 'Incorrect Login Credentials',
+                            description:
+                              'Incorrect email or password. Please try again.',
+                            btnLabel: 'OK',
+                            visible: true,
+                          });
+                        } else {
+                          Alert.alert(
+                            'Server Error',
+                            'Please try again later.',
+                            [{text: 'OK'}],
+                          );
+                        }
                       }
-                    }
-                  }}
-                >
-                  <Text style={text.buttonText}>Login with WealthSimple</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </AuthContext.Consumer>
-        </LinearGradient>
-      </View>
+                    }}>
+                    <Text style={text.buttonText}>Login with WealthSimple</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </AuthContext.Consumer>
+          </LinearGradient>
+        </View>
       )}
     </ThemeContext.Consumer>
   );
 };
-
 
 export default LoginScreen;
 
