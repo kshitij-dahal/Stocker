@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
+import {getStockData} from '../APIConnectors/AlphaVantageConnector';
 
 const Item = ({item, onPress, style}) => (
   <TouchableOpacity
@@ -38,7 +39,10 @@ const StockListScreen = () => {
     return (
       <Item
         item={item}
-        onPress={() => setSelectedId(item.symbol)}
+        onPress={async () => {
+          setSelectedId(item.symbol);
+          console.log(await getStockData(item.symbol));
+        }}
         style={{backgroundColor}}
       />
     );

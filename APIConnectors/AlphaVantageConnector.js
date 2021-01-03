@@ -11,19 +11,38 @@ const processStockData = (data) => {
   // structure
   // contains all required info in an object in order of decreasing fiscal date
 
-  // DPS
-  data.cashFlowResult.reduce((accumulator, currentValue, index) => {
+  // DPS, netIncome, dividendPayoutRatio
+  data.cashFlowResult.forEach((key, index) => {
     let stockInfo = {
-      fiscalDateEnding: currentValue.fiscalDateEnding,
+      fiscalDateEnding: key.fiscalDateEnding,
       DPS: (
-        currentValue.dividendPayout /
+        key.dividendPayout /
         data.balanceSheetResult[index].commonStockSharesOutstanding
       ).toFixed(2),
+      netIncome: key.netIncome,
     };
-    accumulator.push(stockInfo);
-  }, finalData);
+    finalData.push(stockInfo);
+  });
 
-  return data;
+  finalData[0].dividendPayoutRatio = (
+    data.cashFlowResult[0].dividendPayout / data.cashFlowResult[0].netIncome
+  ).toFixed(2);
+
+  // p/e ratio, profit margin
+  finalData[0].PERatio = data.overViewResult.PERatio;
+  finalData[0].ProfitMargin = data.overViewResult.ProfitMargin;
+
+  // goodwill, others missing
+  finalData[0].goodwill = data.balanceSheetResult[0].goodwill;
+
+  //EPS
+  data.earningsResult.forEach((value, index) => {
+    if (index < finalData.length) {
+      finalData[index].EPS = value.reportedEPS;
+    }
+  });
+
+  return finalData;
 };
 
 export const getStockData = async (symbol) => {
@@ -32,17 +51,14 @@ export const getStockData = async (symbol) => {
       baseURL: url,
     })
     .get('/query?function=OVERVIEW&symbol=' + symbol + '&apikey=' + apikey)
+    .then((res) => res.data)
     .then((res) => {
+      console.log('here mane');
+      console.log(res);
       const attributesNeeded = ['PERatio', 'ProfitMargin'];
-      const reducedResult = Object.keys(res).reduce(
-        (accumulator, currentValue) => {
-          if (attributesNeeded.includes(currentValue)) {
-            accumulator[currentValue] = res[currentValue];
-          }
-        },
-        {},
-      );
-      return reducedResult;
+      let final = {};
+      attributesNeeded.forEach((key) => (final[key] = res[key]));
+      return final;
     })
     .catch((err) => {
       console.log(err);
@@ -52,23 +68,27 @@ export const getStockData = async (symbol) => {
       baseURL: url,
     })
     .get('/query?function=CASH_FLOW&symbol=' + symbol + '&apikey=' + apikey)
+    .then((res) => res.data)
     .then((res) => {
       const attributesNeededForEveryFiscalDate = [
         'fiscalDateEnding',
         'dividendPayout',
         'netIncome',
       ];
-      const reducedResult = res.quarterlyReports.reduce(
-        (accumulator, fiscalDateInfo) => {
-          let eachDate = {};
-          attributesNeededForEveryFiscalDate.forEach(
-            (key) => (eachDate[key] = fiscalDateInfo[key]),
-          );
-          accumulator.push(eachDate);
-        },
-        [],
-      );
-      return reducedResult;
+      let final = [];
+      console.log('haha cash flow quarterly');
+      console.log(Object.keys(res));
+      console.log(res.quarterlyReports);
+      res.quarterlyReports.forEach((fiscalDateInfo) => {
+        let eachDate = {};
+        attributesNeededForEveryFiscalDate.forEach(
+          (key) => (eachDate[key] = fiscalDateInfo[key]),
+        );
+        final.push(eachDate);
+      });
+      console.log(' cashflow data');
+      console.log(final);
+      return final;
     })
     .catch((err) => {
       console.log(err);
@@ -78,12 +98,13 @@ export const getStockData = async (symbol) => {
       baseURL: url,
     })
     .get('/query?function=BALANCE_SHEET&symbol=' + symbol + '&apikey=' + apikey)
+    .then((res) => res.data)
     .then((res) => {
       const attributesNeededForEveryFiscalDate = [
         'fiscalDateEnding',
         'commonStockSharesOutstanding',
       ];
-      const additionalAttributesNeededForLatestfiscalDate = [
+      const additionalAttributesNeededForLatestFiscalDate = [
         'goodwill',
         'currentLongTermDebt',
         'longTermDebt',
@@ -92,22 +113,23 @@ export const getStockData = async (symbol) => {
         'totalShareholderEquity',
         'totalCurrentAssets',
       ];
-      const reducedResult = res.quarterlyReports.reduce(
-        (accumulator, fiscalDateInfo) => {
-          let eachDate = {};
-          if (accumulator.isEmpty()) {
-            additionalAttributesNeededForLatestfiscalDate.forEach(
-              (key) => (eachDate[key] = fiscalDateInfo[key]),
-            );
-          }
-          attributesNeededForEveryFiscalDate.forEach(
+      let final = [];
+
+      res.quarterlyReports.forEach((fiscalDateInfo) => {
+        let eachDate = {};
+        if (final.length === 0) {
+          additionalAttributesNeededForLatestFiscalDate.forEach(
             (key) => (eachDate[key] = fiscalDateInfo[key]),
           );
-          accumulator.push(eachDate);
-        },
-        [],
-      );
-      return reducedResult;
+        }
+        attributesNeededForEveryFiscalDate.forEach(
+          (key) => (eachDate[key] = fiscalDateInfo[key]),
+        );
+        final.push(eachDate);
+      });
+      console.log('baalance sheet');
+      console.log(final);
+      return final;
     })
     .catch((err) => {
       console.log(err);
@@ -117,36 +139,22 @@ export const getStockData = async (symbol) => {
       baseURL: url,
     })
     .get('/query?function=EARNINGS&symbol=' + symbol + '&apikey=' + apikey)
+    .then((res) => res.data)
     .then((res) => {
-      const attributesNeededForEveryFiscalDate = [
-        'fiscalDateEnding',
-        'commonStockSharesOutstanding',
-      ];
-      const additionalAttributesNeededForLatestfiscalDate = [
-        'goodwill',
-        'currentLongTermDebt',
-        'longTermDebt',
-        'totalCurrentAssets',
-        'totalLiabilities',
-        'totalShareholderEquity',
-        'totalCurrentAssets',
-      ];
-      const reducedResult = res.quarterlyReports.reduce(
-        (accumulator, fiscalDateInfo) => {
-          let eachDate = {};
-          if (accumulator.isEmpty()) {
-            additionalAttributesNeededForLatestfiscalDate.forEach(
-              (key) => (eachDate[key] = fiscalDateInfo[key]),
-            );
-          }
-          attributesNeededForEveryFiscalDate.forEach(
-            (key) => (eachDate[key] = fiscalDateInfo[key]),
-          );
-          accumulator.push(eachDate);
-        },
-        [],
-      );
-      return reducedResult;
+      const attributesNeededForEveryFiscalDate = ['reportedEPS'];
+      let final = [];
+      console.log('we entered earnings');
+      console.log(Object.keys(res));
+      res.quarterlyEarnings.forEach((fiscalDateInfo) => {
+        let eachDate = {};
+        attributesNeededForEveryFiscalDate.forEach(
+          (key) => (eachDate[key] = fiscalDateInfo[key]),
+        );
+        final.push(eachDate);
+      });
+      console.log('we finished earnings');
+      console.log(final);
+      return final;
     })
     .catch((err) => {
       console.log(err);
