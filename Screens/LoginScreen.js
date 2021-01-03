@@ -67,9 +67,10 @@ const LoginScreen = ({navigation}) => {
                     onPress={async () => {
                       let result = await data.signIn(email, password);
                       if (result.success) {
-                        setEmail('');
-                        setPassword('');
-                        navigation.navigate('OTP');
+                        navigation.navigate('OTP', {
+                          email: email,
+                          password: password,
+                        });
                       } else {
                         if (result.status === 400) {
                           setDialogInfo({

@@ -13,7 +13,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import {buttons, text, inputBox} from './styles';
 import Dialog from 'react-native-dialog';
 
-const OTPScreen = ({navigation}) => {
+const OTPScreen = ({route, navigation}) => {
+  const { email, password } = route.params;
   const [otp, setOtp] = React.useState('');
   const [dialogInfo, setDialogInfo] = React.useState({
     title: '',
@@ -21,7 +22,7 @@ const OTPScreen = ({navigation}) => {
     btnLabel: '',
     visible: false,
   });
-
+  
   return (
     <ThemeContext.Consumer>
       {(theme) => (
@@ -70,6 +71,28 @@ const OTPScreen = ({navigation}) => {
                     }}>
                     <Text style={text.buttonText}>Continue with OTP</Text>
                   </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[buttons.wealthsimpleButton, styles.resentOTPButton]}
+                    onPress={async () => {
+                      let result = await data.signIn(email, password)
+                      if(result.status === 500) {
+                        Alert.alert(
+                          'Server Error',
+                          'Please try again later.',
+                          [{text: 'OK'}],
+                        );
+                      } else {
+                        setDialogInfo({
+                          title: 'OTP Resent',
+                          description:
+                            'Another OTP has been resent. Please enter to login.',
+                          btnLabel: 'OK',
+                          visible: true,
+                        });
+                      }
+                    }}>
+                    <Text style={text.buttonText}>Resend OTP</Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </AuthContext.Consumer>
@@ -85,7 +108,15 @@ const styles = StyleSheet.create({
     fontSize: 24,
     justifyContent: 'center',
     letterSpacing: 30,
+    marginBottom: 30
   },
+  resentOTPButton: {
+    backgroundColor: "#696969",
+    width: "80%",
+    height: "60%",
+    marginTop: 30,
+  },
+  
 });
 
 export default OTPScreen;

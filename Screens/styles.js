@@ -12,6 +12,7 @@ const buttons = StyleSheet.create({
         borderRadius: 50
     }
 })
+
 const text = StyleSheet.create({
     buttonText: {
         color: 'white',
