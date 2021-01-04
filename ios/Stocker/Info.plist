@@ -55,6 +55,7 @@
 	<false/>
 	<key>UIAppFonts</key>
 	<array>
+<<<<<<< HEAD
 		<string>AntDesign.ttf</string>
 		<string>Entypo.ttf</string>
 		<string>EvilIcons.ttf</string>
@@ -71,6 +72,10 @@
 		<string>Octicons.ttf</string>
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
+=======
+		<string>FuturaPT-Book.otf</string>
+		<string>FuturaPT-Light.otf</string>
+>>>>>>> 234772a4d0dadec5c63a68db626ea8233051e87a
 	</array>
 </dict>
 </plist>

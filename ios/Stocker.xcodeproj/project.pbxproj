@@ -32,6 +32,8 @@
 		14CD4923755C4E5BA99B4B27 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D73C29F7D4ABAA64EFE63 /* Octicons.ttf */; };
 		75351148320043C6B7B06C92 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E00FE2FACE4C4838A1D39269 /* SimpleLineIcons.ttf */; };
 		3909DA4AFC614E699D52D0FE /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6AC3EA7CDC4F456AA484AE4A /* Zocial.ttf */; };
+		B96C6908D9084E1D885841AF /* FuturaPT-Book.otf in Resources */ = {isa = PBXBuildFile; fileRef = B94191C7487E43F0B1AE267A /* FuturaPT-Book.otf */; };
+		D6629A1F84DB4C5FB7313F27 /* FuturaPT-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 514BE96AD180433C8B585BB2 /* FuturaPT-Light.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +85,8 @@
 		4C9D73C29F7D4ABAA64EFE63 /* Octicons.ttf */ = {isa = PBXFileReference; name = "Octicons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		E00FE2FACE4C4838A1D39269 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		6AC3EA7CDC4F456AA484AE4A /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B94191C7487E43F0B1AE267A /* FuturaPT-Book.otf */ = {isa = PBXFileReference; name = "FuturaPT-Book.otf"; path = "../assets/fonts/FuturaPT-Book.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		514BE96AD180433C8B585BB2 /* FuturaPT-Light.otf */ = {isa = PBXFileReference; name = "FuturaPT-Light.otf"; path = "../assets/fonts/FuturaPT-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +177,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				088200481F554F03BF5AA6B7 /* Resources */,
+				352F3B0F09664409B7C05F22 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -209,6 +214,11 @@
 				4C9D73C29F7D4ABAA64EFE63 /* Octicons.ttf */,
 				E00FE2FACE4C4838A1D39269 /* SimpleLineIcons.ttf */,
 				6AC3EA7CDC4F456AA484AE4A /* Zocial.ttf */,
+		352F3B0F09664409B7C05F22 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				B94191C7487E43F0B1AE267A /* FuturaPT-Book.otf */,
+				514BE96AD180433C8B585BB2 /* FuturaPT-Light.otf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -368,6 +378,8 @@
 				14CD4923755C4E5BA99B4B27 /* Octicons.ttf in Resources */,
 				75351148320043C6B7B06C92 /* SimpleLineIcons.ttf in Resources */,
 				3909DA4AFC614E699D52D0FE /* Zocial.ttf in Resources */,
+				B96C6908D9084E1D885841AF /* FuturaPT-Book.otf in Resources */,
+				D6629A1F84DB4C5FB7313F27 /* FuturaPT-Light.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -64,7 +64,7 @@ const StockListScreen = () => {
       ),
     );
     setDisplayedStocks(newDisplayedStocks);
-  }, [searchText]);
+  }, [searchText, portfolioStocks]);
 
   return (
     <View style={{backgroundColor: '#3D4B56', flex: 1}}>
