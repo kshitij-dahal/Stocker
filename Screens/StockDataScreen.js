@@ -13,6 +13,17 @@ const EPSDataSet = (data) => {
   return dataSet;
 };
 
+const DPSDataSet = (data) => {
+  let dataSet = {label: 'DPS', values: []};
+  data.forEach((fiscalDate) => {
+    dataSet.values.push(parseFloat(fiscalDate.DPS));
+  });
+  console.log('this is the dataset');
+  dataSet.values = dataSet.values.slice(0,9);
+  console.log(dataSet);
+  return dataSet;
+};
+
 const StockDataScreen = ({route, navigation}) => {
   const {data} = route.params;
   console.log('this is the data');
@@ -23,7 +34,7 @@ const StockDataScreen = ({route, navigation}) => {
       <Text>Profit Margin: {data[0].ProfitMargin}</Text>
       <LineChart
         style={{width: '100%', height: '70%'}}
-        data={{dataSets: [EPSDataSet(data)]}}
+        data={{dataSets: [DPSDataSet(data)]}}
       />
     </View>
   );
