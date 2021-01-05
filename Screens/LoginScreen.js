@@ -82,11 +82,12 @@ const LoginScreen = ({navigation}) => {
                             visible: true,
                           });
                         } else {
-                          Alert.alert(
-                            'Server Error',
-                            'Please try again later.',
-                            [{text: 'OK'}],
-                          );
+                          setDialogInfo({
+                            title:'Server Error',
+                            description: 'Please try again later.',
+                            btnLabel: 'OK',
+                            visible: true,
+                          });
                         }
                       }
                     }}>

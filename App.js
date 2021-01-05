@@ -107,18 +107,17 @@ const App = () => {
     },
     signInWithOtp: async (otp) => {
       // try login
-      
+
       let response = await loginUser({
         email: state.email,
         password: state.password,
         otp: otp,
       });
-      
+
       if (response.success) {
-        await dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
-        return true;
+        dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
       }
-      return false;
+      return response;
     },
     signOut: () => dispatch({type: 'SIGN_OUT'}),
   };

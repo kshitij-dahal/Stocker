@@ -59,14 +59,23 @@ const OTPScreen = ({route, navigation}) => {
                     style={buttons.wealthsimpleButton}
                     onPress={async () => {
                       let result = await data.signInWithOtp(otp);
-                      if (!result) {
-                        setDialogInfo({
-                          title: 'Incorrect OTP',
-                          description:
-                            'Please enter the correct OTP sent to your Email',
-                          btnLabel: 'OK',
-                          visible: true,
-                        });
+                      if (!result.success) {
+                        if(result.status === 401) {
+                          setDialogInfo({
+                            title: 'Incorrect OTP',
+                            description:
+                              'Please enter the correct OTP sent to your Email',
+                            btnLabel: 'OK',
+                            visible: true,
+                          });
+                        } else {
+                          setDialogInfo({
+                            title:'Server Error',
+                            description: 'Please try again later.',
+                            btnLabel: 'OK',
+                            visible: true,
+                          });
+                        }
                       }
                     }}>
                     <Text style={text.buttonText}>Continue with OTP</Text>
