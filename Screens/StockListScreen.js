@@ -63,6 +63,12 @@ const StockListScreen = () => {
     setDisplayedStocks(newDisplayedStocks);
   }, [searchText, portfolioStocks]);
 
+  const noStocksComponent = () => (
+    <View style={{alignItems: 'center'}}>
+      <Text style={styles.noStocksDisplay}>No Stocks Available</Text>
+    </View>
+  );
+
   return (
     <ThemeContext.Consumer>
       {(theme) => (
@@ -93,6 +99,7 @@ const StockListScreen = () => {
               renderItem={renderItem}
               keyExtractor={(item) => item.symbol}
               extraData={selectedId}
+              ListEmptyComponent={() => noStocksComponent()}
             />
           </SafeAreaView>
         </LinearGradient>
@@ -107,6 +114,12 @@ const styles = StyleSheet.create({
     height:"100%",
     width: "100%",
     alignItems: 'center'
+  },
+  noStocksDisplay: {
+    fontSize: 25, 
+    fontFamily: "FuturaPT-Book",
+    color: 'white',
+    margin: 10
   } 
 });
 
