@@ -13,13 +13,13 @@ const buttons = StyleSheet.create({
     },
     stockButton: {
         padding: 20,
-        margin: 1,
-        borderTopWidth: 1,
-        borderColor: '#3D4B56',
+        margin: 0.5,
+        marginBottom: 4,
+        borderColor: '#759982',
         backgroundColor: '#759982',
-        height: 80,
-        borderRadius: 50,
-        alignItems: 'flex-start',
+        height: 65,
+        width: "100%",
+        borderRadius: 17,
         justifyContent: 'center',
     }
 })

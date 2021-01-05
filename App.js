@@ -29,15 +29,12 @@ const theme = {
   },
   background: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     height: "100%",
     width: "100%",
   },
   linearGradient: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 5,
     height: "100%",
     width: "100%",
   },
@@ -98,8 +95,7 @@ const App = () => {
   const authContext = {
     signIn: async (email, password) => {
       // try login
-      //let response = await loginUser({email: email, password: password});
-      let response = {success: true};
+      let response = await loginUser({email: email, password: password});
       console.log('response ho ');
       console.log(email);
       console.log(password);
@@ -111,14 +107,13 @@ const App = () => {
     },
     signInWithOtp: async (otp) => {
       // try login
-      /*
+      
       let response = await loginUser({
         email: state.email,
         password: state.password,
         otp: otp,
       });
-      */
-     let response = {success: true};
+      
       if (response.success) {
         await dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
         return true;

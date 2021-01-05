@@ -43,8 +43,7 @@ const StockListScreen = () => {
 
   useEffect(() => {
     const getPortfolioData = async () => {
-      //const data = await getPortfolio();
-      const data = {success: true, portfolio: [{symbol: "APPL"}, {symbol: "TSLA"}, {symbol: "BMO"}]}
+      const data = await getPortfolio();
       console.log('got it here');
       console.log(data);
       setPortfolioStocks(data.portfolio);
@@ -74,13 +73,22 @@ const StockListScreen = () => {
             style={theme.linearGradient}
             start={{x: 0.5, y: 0}}
             end={{x: 0.5, y: 1}}>
-          <SafeAreaView>
+          <SafeAreaView style={styles.safeView}>
             <SearchBar
+              round={true}
+              inputStyle={{
+                fontFamily: 'FuturaPT-Book'
+              }}
               placeholder="Type Here..."
               onChangeText={setSearchText}
               value={searchText}
+              containerStyle={{
+                marginBottom:10,  
+                width: "100%",
+              }}
             />
             <FlatList
+              style={{width:"96%"}}
               data={displayedStocks}
               renderItem={renderItem}
               keyExtractor={(item) => item.symbol}
@@ -93,6 +101,14 @@ const StockListScreen = () => {
     </ThemeContext.Consumer>
   );
 };
+
+const styles = StyleSheet.create({
+  safeView: {
+    height:"100%",
+    width: "100%",
+    alignItems: 'center'
+  } 
+});
 
 export default StockListScreen;
 
