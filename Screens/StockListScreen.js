@@ -1,5 +1,7 @@
 import React from 'react';
 import {useEffect} from 'react';
+import {ThemeContext} from '../ThemeContext';
+import LinearGradient from 'react-native-linear-gradient';
 import {
   SafeAreaView,
   View,
@@ -11,18 +13,13 @@ import {
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
+import {buttons, text, inputBox} from './styles';
 
 const Item = ({item, onPress, style}) => (
-  <TouchableOpacity
+  <TouchableOpacity 
     onPress={onPress}
-    style={{
-      padding: 20,
-      margin: 1,
-      borderTopWidth: 1,
-      borderColor: '#3D4B56',
-      backgroundColor: '#759982',
-    }}>
-    <Text style={{color: 'white'}}>{item.symbol}</Text>
+    style={buttons.stockButton}>
+    <Text style={text.buttonText}>{item.symbol}</Text>
   </TouchableOpacity>
 );
 
@@ -46,7 +43,8 @@ const StockListScreen = () => {
 
   useEffect(() => {
     const getPortfolioData = async () => {
-      const data = await getPortfolio();
+      //const data = await getPortfolio();
+      const data = {success: true, portfolio: [{symbol: "APPL"}, {symbol: "TSLA"}, {symbol: "BMO"}]}
       console.log('got it here');
       console.log(data);
       setPortfolioStocks(data.portfolio);
@@ -67,21 +65,32 @@ const StockListScreen = () => {
   }, [searchText, portfolioStocks]);
 
   return (
-    <View style={{backgroundColor: '#3D4B56', flex: 1}}>
-      <SafeAreaView>
-        <SearchBar
-          placeholder="Type Here..."
-          onChangeText={setSearchText}
-          value={searchText}
-        />
-        <FlatList
-          data={displayedStocks}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.symbol}
-          extraData={selectedId}
-        />
-      </SafeAreaView>
-    </View>
+    <ThemeContext.Consumer>
+      {(theme) => (
+      <View style={theme.background}>
+        <LinearGradient
+            //theme.colors.background rgb(149, 163, 173)
+            colors={[theme.colors.background, '#979899']}
+            style={theme.linearGradient}
+            start={{x: 0.5, y: 0}}
+            end={{x: 0.5, y: 1}}>
+          <SafeAreaView>
+            <SearchBar
+              placeholder="Type Here..."
+              onChangeText={setSearchText}
+              value={searchText}
+            />
+            <FlatList
+              data={displayedStocks}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.symbol}
+              extraData={selectedId}
+            />
+          </SafeAreaView>
+        </LinearGradient>
+      </View>
+      )}
+    </ThemeContext.Consumer>
   );
 };
 

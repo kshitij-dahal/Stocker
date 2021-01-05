@@ -10,6 +10,17 @@ const buttons = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 50
+    },
+    stockButton: {
+        padding: 20,
+        margin: 1,
+        borderTopWidth: 1,
+        borderColor: '#3D4B56',
+        backgroundColor: '#759982',
+        height: 80,
+        borderRadius: 50,
+        alignItems: 'flex-start',
+        justifyContent: 'center',
     }
 })
 
