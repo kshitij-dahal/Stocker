@@ -82,7 +82,12 @@ export const getPortfolio = async () => {
       const {results} = response.data;
       let stocks = [];
       results.map((position) => {
-        stocks.push({symbol: position.stock.symbol});
+        if (
+          position.stock.security_type.toLowerCase().localeCompare('equity') ===
+          0
+        ) {
+          stocks.push({symbol: position.stock.symbol});
+        }
       });
       return {success: true, portfolio: stocks};
     })
