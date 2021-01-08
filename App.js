@@ -17,11 +17,11 @@ const theme = {
     background: 'rgb(61, 75, 86)',
     primaryText: 'rbg(255, 255, 255)',
     secondaryText: 'rbg(0, 0, 0)',
-    secondaryBackground: 'rbg(211, 211, 211)'
+    secondaryBackground: 'rbg(211, 211, 211)',
   },
   view: {
-    width: "100%",
-    height: "10%",
+    width: '100%',
+    height: '10%',
     margin: 'auto',
     marginTop: 10,
     alignItems: 'center',
@@ -29,15 +29,14 @@ const theme = {
   },
   background: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: '100%',
+    width: '100%',
   },
   linearGradient: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 5,
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
   },
 };
 
@@ -108,6 +107,7 @@ const App = () => {
     },
     signInWithOtp: async (otp) => {
       // try login
+
       let response = await loginUser({
         email: state.email,
         password: state.password,
@@ -115,10 +115,9 @@ const App = () => {
       });
 
       if (response.success) {
-        await dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
-        return true;
+        dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
       }
-      return false;
+      return response;
     },
     signOut: () => dispatch({type: 'SIGN_OUT'}),
   };
@@ -138,6 +137,9 @@ const App = () => {
       <AuthContext.Provider value={authContext} theme={theme}>
         <NavigationContainer>
           <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}
             initialRouteName={() => {
               return state.userAccessToken == null ? 'OTP' : 'StockList';
             }}>
@@ -149,7 +151,7 @@ const App = () => {
           </Stack.Navigator>
         </NavigationContainer>
       </AuthContext.Provider>
-      </ThemeContext.Provider>
+    </ThemeContext.Provider>
   );
 };
 

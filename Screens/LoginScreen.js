@@ -66,6 +66,7 @@ const LoginScreen = ({navigation}) => {
                     style={buttons.wealthsimpleButton}
                     onPress={async () => {
                       let result = await data.signIn(email, password);
+                      setPassword('');
                       if (result.success) {
                         navigation.navigate('OTP', {
                           email: email,
@@ -81,11 +82,12 @@ const LoginScreen = ({navigation}) => {
                             visible: true,
                           });
                         } else {
-                          Alert.alert(
-                            'Server Error',
-                            'Please try again later.',
-                            [{text: 'OK'}],
-                          );
+                          setDialogInfo({
+                            title:'Server Error',
+                            description: 'Please try again later.',
+                            btnLabel: 'OK',
+                            visible: true,
+                          });
                         }
                       }
                     }}>

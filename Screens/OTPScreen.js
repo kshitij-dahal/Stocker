@@ -1,4 +1,6 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {BackHandler} from 'react-native';
+
 import {
   View,
   TextInput,
@@ -13,8 +15,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import {buttons, text, inputBox} from './styles';
 import Dialog from 'react-native-dialog';
 
-const OTPScreen = ({route, navigation}) => {
-  const { email, password } = route.params;
+const OTPScreen = ({route, navigation: {goBack}}) => {
+  const {email, password} = route.params;
   const [otp, setOtp] = React.useState('');
   const [dialogInfo, setDialogInfo] = React.useState({
     title: '',
@@ -22,7 +24,11 @@ const OTPScreen = ({route, navigation}) => {
     btnLabel: '',
     visible: false,
   });
-  
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', goBack);
+  }, [goBack]);
+
   return (
     <ThemeContext.Consumer>
       {(theme) => (
@@ -59,14 +65,23 @@ const OTPScreen = ({route, navigation}) => {
                     style={buttons.wealthsimpleButton}
                     onPress={async () => {
                       let result = await data.signInWithOtp(otp);
-                      if (!result) {
-                        setDialogInfo({
-                          title: 'Incorrect OTP',
-                          description:
-                            'Please enter the correct OTP sent to your Email',
-                          btnLabel: 'OK',
-                          visible: true,
-                        });
+                      if (!result.success) {
+                        if (result.status === 401) {
+                          setDialogInfo({
+                            title: 'Incorrect OTP',
+                            description:
+                              'Please enter the correct OTP sent to your Email',
+                            btnLabel: 'OK',
+                            visible: true,
+                          });
+                        } else {
+                          setDialogInfo({
+                            title: 'Server Error',
+                            description: 'Please try again later.',
+                            btnLabel: 'OK',
+                            visible: true,
+                          });
+                        }
                       }
                     }}>
                     <Text style={text.buttonText}>Continue with OTP</Text>
@@ -74,13 +89,14 @@ const OTPScreen = ({route, navigation}) => {
                   <TouchableOpacity
                     style={[buttons.wealthsimpleButton, styles.resentOTPButton]}
                     onPress={async () => {
-                      let result = await data.signIn(email, password)
-                      if(result.status === 500) {
-                        Alert.alert(
-                          'Server Error',
-                          'Please try again later.',
-                          [{text: 'OK'}],
-                        );
+                      let result = await data.signIn(email, password);
+                      if (result.status === 500) {
+                        setDialogInfo({
+                          title: 'Server Error',
+                          description: 'Please try again later.',
+                          btnLabel: 'OK',
+                          visible: true,
+                        });
                       } else {
                         setDialogInfo({
                           title: 'OTP Resent',
@@ -108,15 +124,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     justifyContent: 'center',
     letterSpacing: 30,
-    marginBottom: 30
+    marginBottom: 30,
   },
   resentOTPButton: {
-    backgroundColor: "#696969",
-    width: "80%",
-    height: "60%",
+    backgroundColor: '#696969',
+    width: '80%',
+    height: '60%',
     marginTop: 30,
   },
-  
 });
 
 export default OTPScreen;

@@ -10,6 +10,17 @@ const buttons = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 50
+    },
+    stockButton: {
+        padding: 20,
+        margin: 0.5,
+        marginBottom: 4,
+        borderColor: '#759982',
+        backgroundColor: '#759982',
+        height: 65,
+        width: "100%",
+        borderRadius: 17,
+        justifyContent: 'center',
     }
 })
 
