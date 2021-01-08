@@ -2,12 +2,44 @@ import React from 'react';
 import LoginScreen from './Screens/LoginScreen';
 import StockListScreen from './Screens/StockListScreen';
 import {createStackNavigator} from '@react-navigation/stack';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {AuthContext} from './AuthContext';
+import {ThemeContext} from './ThemeContext';
+
 import OTPScreen from './Screens/OTPScreen';
 import {loginUser} from './APIConnectors/WealthSimpleConnector';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StockDataScreen from "./Screens/StockDataScreen";
+
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'rgb(61, 75, 86)',
+    primaryText: 'rbg(255, 255, 255)',
+    secondaryText: 'rbg(0, 0, 0)',
+    secondaryBackground: 'rbg(211, 211, 211)',
+  },
+  view: {
+    width: '100%',
+    height: '10%',
+    margin: 'auto',
+    marginTop: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  background: {
+    flex: 1,
+    height: '100%',
+    width: '100%',
+  },
+  linearGradient: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    width: '100%',
+  },
+};
 
 const Stack = createStackNavigator();
 
@@ -53,11 +85,12 @@ const App = () => {
   );
 
   React.useEffect(() => {
-    try {
-      let token = async () => {
-        return JSON.parse(AsyncStorage.getItem('tokens'));
-      };
-    } catch (e) {}
+    async function asyncStorage() {
+      try {
+        let token = JSON.parse(await AsyncStorage.getItem('tokens'));
+      } catch (e) {}
+    }
+    asyncStorage();
   }, []);
 
   const authContext = {
@@ -75,6 +108,7 @@ const App = () => {
     },
     signInWithOtp: async (otp) => {
       // try login
+
       let response = await loginUser({
         email: state.email,
         password: state.password,
@@ -82,10 +116,9 @@ const App = () => {
       });
 
       if (response.success) {
-        await dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
-        return true;
+        dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
       }
-      return false;
+      return response;
     },
     signOut: () => dispatch({type: 'SIGN_OUT'}),
   };
@@ -102,20 +135,25 @@ const App = () => {
   };
 
   return (
-    <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={() => {
-            return state.userAccessToken == null ? 'Login' : 'StockList';
-          }}>
-          {Object.entries(
-            state.userAccessToken == null ? screens.auth : screens.user,
-          ).map(([name, component]) => (
-            <Stack.Screen name={name} component={component} />
-          ))}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthContext.Provider>
+    <ThemeContext.Provider value={theme}>
+      <AuthContext.Provider value={authContext} theme={theme}>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: true,
+            }}
+            initialRouteName={() => {
+              return state.userAccessToken == null ? 'OTP' : 'StockList';
+            }}>
+            {Object.entries(
+              state.userAccessToken == null ? screens.auth : screens.user,
+            ).map(([name, component]) => (
+              <Stack.Screen name={name} component={component} />
+            ))}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AuthContext.Provider>
+    </ThemeContext.Provider>
   );
 };
 

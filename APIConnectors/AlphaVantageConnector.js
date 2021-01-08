@@ -42,7 +42,8 @@ const processStockData = (data) => {
     }
   });
 
-  return finalData;
+  console.log('ya ya ');
+  return {success: true, data: finalData};
 };
 
 export const getStockData = async (symbol) => {
@@ -61,7 +62,10 @@ export const getStockData = async (symbol) => {
       return final;
     })
     .catch((err) => {
-      console.log(err);
+      return {
+        success: false,
+        status: err.response.status,
+      };
     });
   let cashFlowResult = await axios
     .create({
@@ -91,7 +95,10 @@ export const getStockData = async (symbol) => {
       return final;
     })
     .catch((err) => {
-      console.log(err);
+      return {
+        success: false,
+        status: err.response.status,
+      };
     });
   let balanceSheetResult = await axios
     .create({
@@ -132,7 +139,10 @@ export const getStockData = async (symbol) => {
       return final;
     })
     .catch((err) => {
-      console.log(err);
+      return {
+        success: false,
+        status: err.response.status,
+      };
     });
   let earningsResult = await axios
     .create({
@@ -157,7 +167,10 @@ export const getStockData = async (symbol) => {
       return final;
     })
     .catch((err) => {
-      console.log(err);
+      return {
+        success: false,
+        status: err.response.status,
+      };
     });
 
   return processStockData({
