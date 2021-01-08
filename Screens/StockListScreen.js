@@ -14,11 +14,11 @@ import {
 import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
 import {buttons, text, inputBox} from './styles';
+import Dialog from 'react-native-dialog';
+import {AuthContext} from '../AuthContext';
 
 const Item = ({item, onPress, style}) => (
-  <TouchableOpacity 
-    onPress={onPress}
-    style={buttons.stockButton}>
+  <TouchableOpacity onPress={onPress} style={buttons.stockButton}>
     <Text style={text.buttonText}>{item.symbol}</Text>
   </TouchableOpacity>
 );
@@ -28,6 +28,12 @@ const StockListScreen = () => {
   const [portfolioStocks, setPortfolioStocks] = React.useState([]);
   const [displayedStocks, setDisplayedStocks] = React.useState([]);
   const [searchText, setSearchText] = React.useState('');
+  const [dialogInfo, setDialogInfo] = React.useState({
+    title: '',
+    description: '',
+    btnLabel: '',
+    visible: false,
+  });
 
   const renderItem = ({item}) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
@@ -44,10 +50,21 @@ const StockListScreen = () => {
   useEffect(() => {
     const getPortfolioData = async () => {
       const data = await getPortfolio();
-      console.log('got it here');
-      console.log(data);
-      setPortfolioStocks(data.portfolio);
-      setDisplayedStocks(JSON.parse(JSON.stringify(data.portfolio)));
+      if (data.success) {
+        let portfolio = data.portfolio;
+        portfolio.sort((a, b) => {
+          return a.symbol.localeCompare(b.symbol);
+        });
+        setPortfolioStocks(data.portfolio);
+        setDisplayedStocks(JSON.parse(JSON.stringify(data.portfolio)));
+      } else {
+        setDialogInfo({
+          title: 'Server Error',
+          description: 'Please try again later.',
+          btnLabel: 'OK',
+          visible: true,
+        });
+      }
     };
     getPortfolioData();
   }, []);
@@ -72,38 +89,55 @@ const StockListScreen = () => {
   return (
     <ThemeContext.Consumer>
       {(theme) => (
-      <View style={theme.background}>
-        <LinearGradient
+        <View style={theme.background}>
+          <LinearGradient
             //theme.colors.background rgb(149, 163, 173)
             colors={[theme.colors.background, '#979899']}
             style={theme.linearGradient}
             start={{x: 0.5, y: 0}}
             end={{x: 0.5, y: 1}}>
-          <SafeAreaView style={styles.safeView}>
-            <SearchBar
-              round={true}
-              inputStyle={{
-                fontFamily: 'FuturaPT-Book'
-              }}
-              placeholder="Type Here..."
-              onChangeText={setSearchText}
-              value={searchText}
-              containerStyle={{
-                marginBottom:10,  
-                width: "100%",
-              }}
-            />
-            <FlatList
-              style={{width:"96%"}}
-              data={displayedStocks}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.symbol}
-              extraData={selectedId}
-              ListEmptyComponent={() => noStocksComponent()}
-            />
-          </SafeAreaView>
-        </LinearGradient>
-      </View>
+            <SafeAreaView style={styles.safeView}>
+              <AuthContext.Consumer>
+                {(data) => (
+                  <Dialog.Container visible={dialogInfo.visible}>
+                    <Dialog.Title>{dialogInfo.title}</Dialog.Title>
+                    <Dialog.Description>
+                      {dialogInfo.description}
+                    </Dialog.Description>
+                    <Dialog.Button
+                      label={dialogInfo.btnLabel}
+                      onPress={() => {
+                        setDialogInfo({...dialogInfo, visible: false});
+                        data.signOut();
+                      }}
+                    />
+                  </Dialog.Container>
+                )}
+              </AuthContext.Consumer>
+              <SearchBar
+                round={true}
+                inputStyle={{
+                  fontFamily: 'FuturaPT-Book',
+                }}
+                placeholder="Type Here..."
+                onChangeText={setSearchText}
+                value={searchText}
+                containerStyle={{
+                  marginBottom: 10,
+                  width: '100%',
+                }}
+              />
+              <FlatList
+                style={{width: '96%'}}
+                data={displayedStocks}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.symbol}
+                extraData={selectedId}
+                ListEmptyComponent={() => noStocksComponent()}
+              />
+            </SafeAreaView>
+          </LinearGradient>
+        </View>
       )}
     </ThemeContext.Consumer>
   );
@@ -111,16 +145,16 @@ const StockListScreen = () => {
 
 const styles = StyleSheet.create({
   safeView: {
-    height:"100%",
-    width: "100%",
-    alignItems: 'center'
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
   },
   noStocksDisplay: {
-    fontSize: 25, 
-    fontFamily: "FuturaPT-Book",
+    fontSize: 25,
+    fontFamily: 'FuturaPT-Book',
     color: 'white',
-    margin: 10
-  } 
+    margin: 10,
+  },
 });
 
 export default StockListScreen;

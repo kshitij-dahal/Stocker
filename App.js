@@ -17,11 +17,11 @@ const theme = {
     background: 'rgb(61, 75, 86)',
     primaryText: 'rbg(255, 255, 255)',
     secondaryText: 'rbg(0, 0, 0)',
-    secondaryBackground: 'rbg(211, 211, 211)'
+    secondaryBackground: 'rbg(211, 211, 211)',
   },
   view: {
-    width: "100%",
-    height: "10%",
+    width: '100%',
+    height: '10%',
     margin: 'auto',
     marginTop: 10,
     alignItems: 'center',
@@ -29,14 +29,14 @@ const theme = {
   },
   background: {
     flex: 1,
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
   },
   linearGradient: {
     alignItems: 'center',
     justifyContent: 'center',
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
   },
 };
 
@@ -137,6 +137,9 @@ const App = () => {
       <AuthContext.Provider value={authContext} theme={theme}>
         <NavigationContainer>
           <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}
             initialRouteName={() => {
               return state.userAccessToken == null ? 'OTP' : 'StockList';
             }}>
