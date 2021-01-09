@@ -44,8 +44,9 @@ const text = StyleSheet.create({
     },
     stockDataSymbol: {
         color: 'white',
-        fontSize: 38,
-        fontFamily: 'FuturaPT-Book'
+        fontSize: 32,
+        fontFamily: 'FuturaPT-Book',
+        textAlign: 'center'
     },
     stockDataName: {
         color: 'white',
