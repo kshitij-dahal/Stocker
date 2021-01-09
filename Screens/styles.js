@@ -21,7 +21,19 @@ const buttons = StyleSheet.create({
         width: "100%",
         borderRadius: 17,
         justifyContent: 'center',
-    }
+    },
+    overViewButton: {
+        backgroundColor: "rgba(124,183,182,0.4)",
+        width: "100%",
+        height: 70,
+        marginTop: 10,
+        padding: 20,
+        paddingLeft: 30,
+        paddingRight: 30,
+        borderRadius: 30,
+        flexDirection: "row",
+        justifyContent: 'space-between',
+    },
 })
 
 const text = StyleSheet.create({
@@ -29,7 +41,24 @@ const text = StyleSheet.create({
         color: 'white',
         fontSize: 22,
         fontFamily: 'FuturaPT-Book'
-    } 
+    },
+    stockDataSymbol: {
+        color: 'white',
+        fontSize: 38,
+        fontFamily: 'FuturaPT-Book'
+    },
+    stockDataName: {
+        color: 'white',
+        fontSize: 25,
+        fontFamily: 'FuturaPT-Book',
+        textAlign: "left"
+    },
+    stockDataAmount: {
+        color: 'white',
+        fontSize: 25,
+        fontFamily: 'FuturaPT-Book',
+        textAlign: "right"
+    }
 })
 
 const inputBox = StyleSheet.create({

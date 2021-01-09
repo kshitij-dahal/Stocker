@@ -55,7 +55,8 @@ const StockListScreen = ({navigation}) => {
 
   useEffect(() => {
     const getPortfolioData = async () => {
-      const data = await getPortfolio();
+      //const data = await getPortfolio();
+      const data = {success: true, portfolio: [{symbol: "AAPL"}, {symbol: "TSLA"}]}
       if (data.success) {
         let portfolio = data.portfolio;
         portfolio.sort((a, b) => {

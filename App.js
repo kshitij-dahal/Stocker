@@ -10,6 +10,7 @@ import OTPScreen from './Screens/OTPScreen';
 import {loginUser} from './APIConnectors/WealthSimpleConnector';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StockDataScreen from "./Screens/StockDataScreen";
+import DataChartScreen from "./Screens/DataChartScreen";
 
 const theme = {
   ...DefaultTheme,
@@ -96,7 +97,8 @@ const App = () => {
   const authContext = {
     signIn: async (email, password) => {
       // try login
-      let response = await loginUser({email: email, password: password});
+      //let response = await loginUser({email: email, password: password});
+      let response = {success: true};
       console.log('response ho ');
       console.log(email);
       console.log(password);
@@ -108,13 +110,14 @@ const App = () => {
     },
     signInWithOtp: async (otp) => {
       // try login
-
+      /*
       let response = await loginUser({
         email: state.email,
         password: state.password,
         otp: otp,
       });
-
+      */
+      let response = {success: true};
       if (response.success) {
         dispatch({type: 'SIGN_IN_W_OTP', accessToken: 'ee'});
       }
@@ -131,6 +134,7 @@ const App = () => {
     user: {
       StockList: StockListScreen,
       StockData: StockDataScreen,
+      DataChart: DataChartScreen
     },
   };
 
