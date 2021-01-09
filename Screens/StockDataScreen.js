@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
 import {View, Text, TouchableOpacity, ScrollView, StyleSheet} from 'react-native';
-import {LineChart} from 'react-native-charts-wrapper';
 import {getStockData} from '../APIConnectors/AlphaVantageConnector';
 import {buttons, text, inputBox} from './styles';
 import {ThemeContext} from '../ThemeContext';
 import LinearGradient from 'react-native-linear-gradient';
 import { Table, TableWrapper, Row } from 'react-native-table-component';
+import {extractMetricDataSet} from '../StockDataUtil';
 
 
 const EPSDataSet = (data) => {
@@ -57,15 +57,14 @@ const StockDataScreen = ({route, navigation}) => {
       }
       tableData.push(rowData);
     }
-    
+
 
   const OverViewDataComponent = ({metric, amount}) => (
     <TouchableOpacity
       style={buttons.overViewButton}
       onPress={async () => {
         navigation.navigate('DataChart', {
-          symbol: symbol,
-          metric: metric
+          dataSet: extractMetricDataSet(data, metric)
         });
       }}
     >
@@ -92,14 +91,14 @@ const StockDataScreen = ({route, navigation}) => {
                     <OverViewDataComponent metric={"EPS"} amount={10}/>
                     <OverViewDataComponent metric={"DPS"} amount={5}/>
                     <OverViewDataComponent metric={"Price"} amount={19}/>
-                    
-                    
+
+
                   </>
                 ) : (
                   <Text>Error</Text>
                 )}
               </View>
-              
+
               <View style={styles.container}>
                     <Table borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}} style={{width: "100%"}}>
                       <Row data={tableHead} style={styles.header} textStyle={styles.text}/>
