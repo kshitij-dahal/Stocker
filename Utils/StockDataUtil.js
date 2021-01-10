@@ -1,4 +1,4 @@
-import { overviewInformation } from "../constants"
+import {overviewInformation} from '../constants';
 
 export const extractMetricDataSet = (data, metric) => {
   let dataSet = {label: metric, values: []};
@@ -11,13 +11,20 @@ export const extractMetricDataSet = (data, metric) => {
 };
 
 export const extractOverviewInformation = (data) => {
-  const attributesNeeded = ['PERatio', 'ProfitMargin', 'goodwill', "netIncome"];
+  const attributesNeeded = [
+    'PERatio',
+    'ProfitMargin',
+    'goodwill',
+    'netIncome',
+    'totalCurrentAssets',
+    'totalCurrentLiabilities',
+  ];
   let final = [];
-  const dataString = JSON.stringify(data)
-  JSON.parse(dataString, function(key, value) {
-    if(attributesNeeded.includes(key)) {
-      final.push([overviewInformation[key], value])
+  const dataString = JSON.stringify(data);
+  JSON.parse(dataString, function (key, value) {
+    if (attributesNeeded.includes(key)) {
+      final.push([overviewInformation[key], value]);
     }
   });
-  return final
-}
+  return final;
+};

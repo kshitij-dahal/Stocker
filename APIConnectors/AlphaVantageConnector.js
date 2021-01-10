@@ -35,6 +35,10 @@ const processStockData = (data) => {
   // goodwill, others missing
   finalData[0].goodwill = data.balanceSheetResult[0].goodwill;
 
+  // total current assets, total current liabilities
+  finalData[0].totalCurrentAssets = data.balanceSheetResult[0].totalCurrentAssets;
+  finalData[0].totalCurrentLiabilities = data.balanceSheetResult[0].totalCurrentLiabilities;
+
   //EPS
   data.earningsResult.forEach((value, index) => {
     if (index < finalData.length) {
@@ -116,9 +120,8 @@ export const getStockData = async (symbol) => {
         'currentLongTermDebt',
         'longTermDebt',
         'totalCurrentAssets',
-        'totalLiabilities',
-        'totalShareholderEquity',
-        'totalCurrentAssets',
+        'totalCurrentLiabilities',
+        'totalShareholderEquity'
       ];
       let final = [];
 
