@@ -10,11 +10,11 @@ import {
   Text,
   StatusBar,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
 import {buttons, text, inputBox} from './styles';
+import LoadableView from '../Components/LoadableView';
 
 const Item = ({item, onPress, style}) => (
   <TouchableOpacity onPress={onPress} style={buttons.stockButton}>
@@ -108,9 +108,7 @@ const StockListScreen = ({navigation}) => {
   return (
     <ThemeContext.Consumer>
       {(theme) => (
-        <View
-          style={theme.background}
-          pointerEvents={stockList.loading ? 'none' : 'auto'}>
+        <LoadableView style={theme.background} loading={stockList.loading}>
           <LinearGradient
             //theme.colors.background rgb(149, 163, 173)
             colors={[theme.colors.background, '#979899']}
@@ -143,20 +141,7 @@ const StockListScreen = ({navigation}) => {
               />
             </SafeAreaView>
           </LinearGradient>
-          {stockList.loading ? (
-            <View
-              style={{
-                position: 'absolute',
-                height: '100%',
-                width: '100%',
-                justifyContent: 'center',
-              }}>
-              <ActivityIndicator size="large" color="white" />
-            </View>
-          ) : (
-            <></>
-          )}
-        </View>
+        </LoadableView>
       )}
     </ThemeContext.Consumer>
   );

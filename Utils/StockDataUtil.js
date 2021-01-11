@@ -3,6 +3,8 @@ import {overviewInformation} from '../constants';
 export const extractMetricDataSet = (data, metric) => {
   let dataSet = {label: metric, values: []};
   let values = [];
+  console.log('HEREHEr');
+  console.log(data);
   data.forEach((key, index) => {
     values.push({
       x: index,

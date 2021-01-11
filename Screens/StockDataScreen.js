@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
 import {getStockData} from '../APIConnectors/AlphaVantageConnector';
 import {buttons, text, inputBox} from './styles';
@@ -16,6 +15,7 @@ import {
   extractMetricDataSet,
   extractOverviewInformation,
 } from '../Utils/StockDataUtil';
+import LoadableView from '../Components/LoadableView';
 
 const EPSDataSet = (data) => {
   let dataSet = {label: 'EPS', values: []};
@@ -82,7 +82,7 @@ const StockDataScreen = ({route, navigation}) => {
       style={buttons.overViewButton}
       onPress={async () => {
         navigation.navigate('DataChart', {
-          dataSet: extractMetricDataSet(data, metric),
+          dataSet: extractMetricDataSet(data.totalStockData, metric),
           metric: metric,
         });
       }}>
@@ -104,9 +104,7 @@ const StockDataScreen = ({route, navigation}) => {
   return (
     <ThemeContext.Consumer>
       {(theme) => (
-        <View
-          style={theme.background}
-          pointerEvents={data.loading ? 'none' : 'auto'}>
+        <LoadableView style={theme.background} loading={data.loading}>
           <LinearGradient
             //theme.colors.background rgb(149, 163, 173)
             colors={[theme.colors.background, '#979899']}
@@ -167,20 +165,7 @@ const StockDataScreen = ({route, navigation}) => {
               <Text>Error</Text>
             )}
           </LinearGradient>
-          {data.loading ? (
-            <View
-              style={{
-                position: 'absolute',
-                height: '100%',
-                width: '100%',
-                justifyContent: 'center',
-              }}>
-              <ActivityIndicator size="large" color="white" />
-            </View>
-          ) : (
-            <></>
-          )}
-        </View>
+        </LoadableView>
       )}
     </ThemeContext.Consumer>
   );
