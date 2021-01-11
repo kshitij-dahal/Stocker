@@ -89,7 +89,12 @@ export const getPortfolio = async () => {
           stocks.push({symbol: position.stock.symbol});
         }
       });
-      return {success: true, portfolio: stocks};
+      return {
+        success: true,
+        portfolio: stocks.sort((a, b) => {
+          return a.symbol.localeCompare(b.symbol);
+        }),
+      };
     })
     .catch((err) => {
       return {success: false, status: err.response.status};

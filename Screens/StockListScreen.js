@@ -15,9 +15,6 @@ import {
 import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
 import {buttons, text, inputBox} from './styles';
-import Dialog from 'react-native-dialog';
-import {AuthContext} from '../AuthContext';
-import {getStockData} from '../APIConnectors/AlphaVantageConnector';
 
 const Item = ({item, onPress, style}) => (
   <TouchableOpacity onPress={onPress} style={buttons.stockButton}>
@@ -26,26 +23,56 @@ const Item = ({item, onPress, style}) => (
 );
 
 const StockListScreen = ({navigation}) => {
-  const [selectedId, setSelectedId] = React.useState(null);
-  const [portfolioStocks, setPortfolioStocks] = React.useState([]);
-  const [displayedStocks, setDisplayedStocks] = React.useState([]);
-  const [searchText, setSearchText] = React.useState('');
-  const [dialogInfo, setDialogInfo] = React.useState({
-    title: '',
-    description: '',
-    btnLabel: '',
-    visible: false,
-  });
-  const [loading, setLoading] = React.useState(true);
+  const [stockList, dispatch] = React.useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'FETCH_STOCK_LIST':
+          return {
+            ...prevState,
+            loading: true,
+          };
+        case 'FETCH_STOCK_LIST_COMPLETE':
+          return {
+            ...prevState,
+            portfolioStocks: action.portfolioStocks,
+            displayedStocks: action.portfolioStocks,
+            loading: false,
+          };
+        case 'SEARCH':
+          return {
+            ...prevState,
+            searchText: action.searchText,
+            displayedStocks: prevState.portfolioStocks.filter((stock) =>
+              stock.symbol
+                .toLowerCase()
+                .includes(action.searchText.toLowerCase()),
+            ),
+          };
+        case 'SELECT_STOCK':
+          return {
+            ...prevState,
+            selectedId: action.symbol,
+          };
+      }
+    },
+    {
+      selectedId: null,
+      portfolioStocks: [],
+      displayedStocks: [],
+      searchText: '',
+      loading: true,
+    },
+  );
 
   const renderItem = ({item}) => {
-    const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
+    const backgroundColor =
+      item.id === stockList.selectedId ? '#6e3b6e' : '#f9c2ff';
 
     return (
       <Item
         item={item}
         onPress={async () => {
-          setSelectedId(item.symbol);
+          dispatch({type: 'SELECT_STOCK', symbol: item.symbol});
           navigation.navigate('StockData', {
             symbol: item.symbol,
           });
@@ -56,45 +83,21 @@ const StockListScreen = ({navigation}) => {
   };
 
   useEffect(() => {
-    console.log("NUMBER 1");
+    console.log('NUMBER 1');
     const getPortfolioData = async () => {
+      dispatch({type: 'FETCH_STOCK_LIST'});
       //const data = await getPortfolio();
       const data = {
         success: true,
         portfolio: [{symbol: 'AAPL'}, {symbol: 'TSLA'}],
       };
-      if (data.success) {
-        let portfolio = data.portfolio;
-        portfolio.sort((a, b) => {
-          return a.symbol.localeCompare(b.symbol);
-        });
-        setPortfolioStocks(data.portfolio);
-        setDisplayedStocks(JSON.parse(JSON.stringify(data.portfolio)));
-      } else {
-        setDialogInfo({
-          title: 'Server Error',
-          description: 'Please try again later.',
-          btnLabel: 'OK',
-          visible: true,
-        });
-      }
+      dispatch({
+        type: 'FETCH_STOCK_LIST_COMPLETE',
+        portfolioStocks: data.success ? data.portfolio : [],
+      });
     };
     getPortfolioData();
-    setLoading(false);
   }, []);
-
-  useEffect(() => {
-    console.log("NUMBER 2");
-    const newDisplayedStocks = JSON.parse(
-      JSON.stringify(
-        portfolioStocks.filter((stock) =>
-          stock.symbol.toLowerCase().includes(searchText.toLowerCase()),
-        ),
-      ),
-    );
-    setDisplayedStocks(newDisplayedStocks);
-    setLoading(false);
-  }, [searchText, portfolioStocks]);
 
   const noStocksComponent = () => (
     <View style={{alignItems: 'center'}}>
@@ -105,7 +108,9 @@ const StockListScreen = ({navigation}) => {
   return (
     <ThemeContext.Consumer>
       {(theme) => (
-        <View style={theme.background} pointerEvents={loading ? 'none' : 'auto'}>
+        <View
+          style={theme.background}
+          pointerEvents={stockList.loading ? 'none' : 'auto'}>
           <LinearGradient
             //theme.colors.background rgb(149, 163, 173)
             colors={[theme.colors.background, '#979899']}
@@ -113,31 +118,16 @@ const StockListScreen = ({navigation}) => {
             start={{x: 0.5, y: 0}}
             end={{x: 0.5, y: 1}}>
             <SafeAreaView style={styles.safeView}>
-              <AuthContext.Consumer>
-                {(data) => (
-                  <Dialog.Container visible={dialogInfo.visible}>
-                    <Dialog.Title>{dialogInfo.title}</Dialog.Title>
-                    <Dialog.Description>
-                      {dialogInfo.description}
-                    </Dialog.Description>
-                    <Dialog.Button
-                      label={dialogInfo.btnLabel}
-                      onPress={() => {
-                        setDialogInfo({...dialogInfo, visible: false});
-                        data.signOut();
-                      }}
-                    />
-                  </Dialog.Container>
-                )}
-              </AuthContext.Consumer>
               <SearchBar
                 round={true}
                 inputStyle={{
                   fontFamily: 'FuturaPT-Book',
                 }}
                 placeholder="Type Here..."
-                onChangeText={setSearchText}
-                value={searchText}
+                onChangeText={(text) =>
+                  dispatch({type: 'SEARCH', searchText: text})
+                }
+                value={stockList.searchText}
                 containerStyle={{
                   marginBottom: 10,
                   width: '100%',
@@ -145,15 +135,15 @@ const StockListScreen = ({navigation}) => {
               />
               <FlatList
                 style={{width: '96%'}}
-                data={displayedStocks}
+                data={stockList.displayedStocks}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.symbol}
-                extraData={selectedId}
+                extraData={stockList.selectedId}
                 ListEmptyComponent={() => noStocksComponent()}
               />
             </SafeAreaView>
           </LinearGradient>
-          {loading ? (
+          {stockList.loading ? (
             <View
               style={{
                 position: 'absolute',
