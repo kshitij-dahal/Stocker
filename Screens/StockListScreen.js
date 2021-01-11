@@ -10,6 +10,7 @@ import {
   Text,
   StatusBar,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
@@ -35,6 +36,7 @@ const StockListScreen = ({navigation}) => {
     btnLabel: '',
     visible: false,
   });
+  const [loading, setLoading] = React.useState(true);
 
   const renderItem = ({item}) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
@@ -54,9 +56,13 @@ const StockListScreen = ({navigation}) => {
   };
 
   useEffect(() => {
+    console.log("NUMBER 1");
     const getPortfolioData = async () => {
       //const data = await getPortfolio();
-      const data = {success: true, portfolio: [{symbol: "AAPL"}, {symbol: "TSLA"}]}
+      const data = {
+        success: true,
+        portfolio: [{symbol: 'AAPL'}, {symbol: 'TSLA'}],
+      };
       if (data.success) {
         let portfolio = data.portfolio;
         portfolio.sort((a, b) => {
@@ -74,9 +80,11 @@ const StockListScreen = ({navigation}) => {
       }
     };
     getPortfolioData();
+    setLoading(false);
   }, []);
 
   useEffect(() => {
+    console.log("NUMBER 2");
     const newDisplayedStocks = JSON.parse(
       JSON.stringify(
         portfolioStocks.filter((stock) =>
@@ -85,6 +93,7 @@ const StockListScreen = ({navigation}) => {
       ),
     );
     setDisplayedStocks(newDisplayedStocks);
+    setLoading(false);
   }, [searchText, portfolioStocks]);
 
   const noStocksComponent = () => (
@@ -96,7 +105,7 @@ const StockListScreen = ({navigation}) => {
   return (
     <ThemeContext.Consumer>
       {(theme) => (
-        <View style={theme.background}>
+        <View style={theme.background} pointerEvents={loading ? 'none' : 'auto'}>
           <LinearGradient
             //theme.colors.background rgb(149, 163, 173)
             colors={[theme.colors.background, '#979899']}
@@ -144,6 +153,19 @@ const StockListScreen = ({navigation}) => {
               />
             </SafeAreaView>
           </LinearGradient>
+          {loading ? (
+            <View
+              style={{
+                position: 'absolute',
+                height: '100%',
+                width: '100%',
+                justifyContent: 'center',
+              }}>
+              <ActivityIndicator size="large" color="white" />
+            </View>
+          ) : (
+            <></>
+          )}
         </View>
       )}
     </ThemeContext.Consumer>

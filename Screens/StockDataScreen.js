@@ -40,22 +40,38 @@ const DPSDataSet = (data) => {
 };
 
 const StockDataScreen = ({route, navigation}) => {
-  const [data, setData] = React.useState([]);
-  const [overview, setOverview] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const [data, dispatch] = React.useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'FETCH_DATA':
+          return {
+            ...prevState,
+            loading: true,
+          };
+        case 'FETCH_DATA_COMPLETE':
+          return {
+            ...prevState,
+            loading: false,
+            totalStockData: action.totalStockData,
+            overview:
+              action.totalStockData.length !== 0
+                ? extractOverviewInformation(action.totalStockData[0])
+                : null,
+          };
+      }
+    },
+    {totalStockData: [], overview: [], loading: true},
+  );
   const {symbol} = route.params;
 
   useEffect(() => {
     const getData = async () => {
+      dispatch({type: 'FETCH_DATA'});
       const stockData = await getStockData(symbol);
-      if (stockData.success) {
-        await setData(stockData.data);
-        console.log(stockData.data[0]);
-        await setOverview(extractOverviewInformation(stockData.data[0]));
-      } else {
-        await setData([]);
-      }
-      setLoading(false);
+      dispatch({
+        type: 'FETCH_DATA_COMPLETE',
+        totalStockData: stockData.success ? stockData.data : [],
+      });
     };
     getData();
   }, [symbol]);
@@ -77,7 +93,7 @@ const StockDataScreen = ({route, navigation}) => {
 
   const gradientLoadingStyle = (existingTheme) => {
     let copy = JSON.parse(JSON.stringify(existingTheme));
-    if (loading) {
+    if (data.loading) {
       copy.opacity = 0.5;
     }
     return copy;
@@ -90,14 +106,14 @@ const StockDataScreen = ({route, navigation}) => {
       {(theme) => (
         <View
           style={theme.background}
-          pointerEvents={loading ? 'none' : 'auto'}>
+          pointerEvents={data.loading ? 'none' : 'auto'}>
           <LinearGradient
             //theme.colors.background rgb(149, 163, 173)
             colors={[theme.colors.background, '#979899']}
             style={gradientLoadingStyle(theme.linearGradient)}
             start={{x: 0.5, y: 0}}
             end={{x: 0.5, y: 1}}>
-            {data.length !== 0 || loading ? (
+            {data.length !== 0 || data.loading ? (
               <ScrollView
                 style={styles.dataWrapper}
                 contentContainerStyle={{
@@ -129,7 +145,7 @@ const StockDataScreen = ({route, navigation}) => {
                     <Table
                       style={{width: '100%'}}
                       borderStyle={{borderWidth: 1, borderColor: '#C1C0B9'}}>
-                      {overview.map((rowData, index) => (
+                      {data.overview.map((rowData, index) => (
                         <Row
                           key={index}
                           data={rowData}
@@ -151,7 +167,7 @@ const StockDataScreen = ({route, navigation}) => {
               <Text>Error</Text>
             )}
           </LinearGradient>
-          {loading ? (
+          {data.loading ? (
             <View
               style={{
                 position: 'absolute',
