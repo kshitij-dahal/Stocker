@@ -67,6 +67,7 @@ const StockDataScreen = ({route, navigation}) => {
       onPress={async () => {
         navigation.navigate('DataChart', {
           dataSet: extractMetricDataSet(data, metric),
+          metric: metric,
         });
       }}>
       <Text style={text.stockDataName}>{metric}</Text>

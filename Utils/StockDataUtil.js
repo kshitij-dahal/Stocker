@@ -4,9 +4,13 @@ export const extractMetricDataSet = (data, metric) => {
   let dataSet = {label: metric, values: []};
   let values = [];
   data.forEach((key, index) => {
-    values.push({x: index, y: parseFloat(key[metric])});
+    values.push({
+      x: index,
+      y: parseFloat(key[metric]),
+      date: key.fiscalDateEnding,
+    });
   });
-  dataSet.values = values;
+  dataSet.values = values.slice(0,7);
   return dataSet;
 };
 
