@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {useEffect} from 'react';
 import {ThemeContext} from '../ThemeContext';
 import LinearGradient from 'react-native-linear-gradient';
@@ -15,6 +15,8 @@ import {SearchBar} from 'react-native-elements';
 import {getPortfolio} from '../APIConnectors/WealthSimpleConnector';
 import {buttons, text, inputBox} from './styles';
 import LoadableView from '../Components/LoadableView';
+import Dialog from 'react-native-dialog';
+import {AuthContext} from '../AuthContext';
 
 const Item = ({item, onPress, style}) => (
   <TouchableOpacity onPress={onPress} style={buttons.stockButton}>
@@ -31,11 +33,22 @@ const StockListScreen = ({navigation}) => {
             ...prevState,
             loading: true,
           };
-        case 'FETCH_STOCK_LIST_COMPLETE':
+        case 'FETCH_STOCK_LIST_SUCCESS':
           return {
             ...prevState,
             portfolioStocks: action.portfolioStocks,
             displayedStocks: action.portfolioStocks,
+            loading: false,
+          };
+        case 'FETCH_STOCK_LIST_FAILURE':
+          return {
+            ...prevState,
+            dialogInfo: {
+              title: 'Server Error',
+              description: 'Please try again later.',
+              btnLabel: 'OK',
+              visible: true,
+            },
             loading: false,
           };
         case 'SEARCH':
@@ -53,6 +66,14 @@ const StockListScreen = ({navigation}) => {
             ...prevState,
             selectedId: action.symbol,
           };
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            dialogInfo: {
+              ...prevState.dialogInfo,
+              visible: false,
+            },
+          };
       }
     },
     {
@@ -61,6 +82,12 @@ const StockListScreen = ({navigation}) => {
       displayedStocks: [],
       searchText: '',
       loading: true,
+      dialogInfo: {
+        title: '',
+        description: '',
+        btnLabel: '',
+        visible: false,
+      },
     },
   );
 
@@ -83,25 +110,34 @@ const StockListScreen = ({navigation}) => {
   };
 
   useEffect(() => {
-    console.log('NUMBER 1');
-    const getPortfolioData = async () => {
-      dispatch({type: 'FETCH_STOCK_LIST'});
-      //const data = await getPortfolio();
-      const data = {
-        success: true,
-        portfolio: [{symbol: 'AAPL'}, {symbol: 'TSLA'}],
-      };
-      dispatch({
-        type: 'FETCH_STOCK_LIST_COMPLETE',
-        portfolioStocks: data.success ? data.portfolio : [],
-      });
-    };
-    getPortfolioData();
+    dispatch({type: 'FETCH_STOCK_LIST'});
+    // const data = {
+    //   success: true,
+    //   portfolio: [{symbol: 'AAPL'}, {symbol: 'TSLA'}],
+    // };
+    getPortfolio().then((data) => {
+      console.log('what is this');
+      console.log(data);
+      if (data.success) {
+        dispatch({
+          type: 'FETCH_STOCK_LIST_SUCCESS',
+          portfolioStocks: data.portfolio,
+        });
+      } else {
+        dispatch({
+          type: 'FETCH_STOCK_LIST_FAILURE',
+        });
+      }
+    });
   }, []);
 
   const noStocksComponent = () => (
     <View style={{alignItems: 'center'}}>
-      <Text style={styles.noStocksDisplay}>No Stocks Available</Text>
+      {stockList.loading ? (
+        <></>
+      ) : (
+        <Text style={styles.noStocksDisplay}>No Stocks Available</Text>
+      )}
     </View>
   );
 
@@ -115,6 +151,23 @@ const StockListScreen = ({navigation}) => {
             style={theme.linearGradient}
             start={{x: 0.5, y: 0}}
             end={{x: 0.5, y: 1}}>
+            <AuthContext.Consumer>
+              {(data) => (
+                <Dialog.Container visible={stockList.dialogInfo.visible}>
+                  <Dialog.Title>{stockList.dialogInfo.title}</Dialog.Title>
+                  <Dialog.Description>
+                    {stockList.dialogInfo.description}
+                  </Dialog.Description>
+                  <Dialog.Button
+                    label={stockList.dialogInfo.btnLabel}
+                    onPress={() => {
+                      dispatch({type: 'SIGN_OUT'});
+                      data.signOut();
+                    }}
+                  />
+                </Dialog.Container>
+              )}
+            </AuthContext.Consumer>
             <SafeAreaView style={styles.safeView}>
               <SearchBar
                 round={true}

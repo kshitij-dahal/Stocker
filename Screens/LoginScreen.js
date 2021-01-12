@@ -36,7 +36,10 @@ const LoginScreen = ({navigation}) => {
             <Dialog.Container visible={dialogInfo.visible}>
               <Dialog.Title>{dialogInfo.title}</Dialog.Title>
               <Dialog.Description>{dialogInfo.description}</Dialog.Description>
-              <Dialog.Button label={dialogInfo.btnLabel} onPress={ () => setDialogInfo({...dialogInfo,visible:false})} />
+              <Dialog.Button
+                label={dialogInfo.btnLabel}
+                onPress={() => setDialogInfo({...dialogInfo, visible: false})}
+              />
             </Dialog.Container>
             <TextInput
               style={inputBox.textBox}
@@ -83,7 +86,7 @@ const LoginScreen = ({navigation}) => {
                           });
                         } else {
                           setDialogInfo({
-                            title:'Server Error',
+                            title: 'Server Error',
                             description: 'Please try again later.',
                             btnLabel: 'OK',
                             visible: true,
