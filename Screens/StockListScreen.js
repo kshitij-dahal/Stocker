@@ -48,9 +48,11 @@ const StockListScreen = () => {
   };
 
   useEffect(() => {
+    console.log('STARTING USEEFFECT IN STOCKLISTSCREEN')
     const getPortfolioData = async () => {
       const data = await getPortfolio();
       if (data.success) {
+        console.log('SUCESSFUL DATA RETRIEVAL IN STOCKLIST USEEFFECT')
         let portfolio = data.portfolio;
         portfolio.sort((a, b) => {
           return a.symbol.localeCompare(b.symbol);
@@ -58,6 +60,7 @@ const StockListScreen = () => {
         setPortfolioStocks(data.portfolio);
         setDisplayedStocks(JSON.parse(JSON.stringify(data.portfolio)));
       } else {
+        console.log('UNSUCESSFUL DATA RETRIEVAL IN STOCKLIST USEEFFECT')
         setDialogInfo({
           title: 'Server Error',
           description: 'Please try again later.',

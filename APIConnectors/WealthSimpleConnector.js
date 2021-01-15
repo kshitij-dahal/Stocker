@@ -51,31 +51,39 @@ export const refresh = async () => {
   let res = await API.post('/auth/refresh', {
     refresh_token: JSON.parse(await AsyncStorage.getItem('tokens')).refresh,
   })
-    .then(async (response) => {
-      const tokens = {
-        access: response.headers['x-access-token'],
-        refresh: response.headers['x-refresh-token'],
-        expiry: parseInt(response.headers['x-access-token-expires']),
-      };
-      try {
-        const tokenJson = JSON.stringify(tokens);
-        await AsyncStorage.setItem('tokens', tokenJson);
-      } catch (e) {
-        // Restoring token failed
-        console.log('i have failed');
-      }
-      setAuthHeaders(tokens);
-    })
-    .catch((err) => {
-      return err;
-    });
+  .then(async (response) => {
+    const tokens = {
+      access: response.headers['x-access-token'],
+      refresh: response.headers['x-refresh-token'],
+      expiry: parseInt(response.headers['x-access-token-expires']),
+    };
+    try {
+      const tokenJson = JSON.stringify(tokens);
+      await AsyncStorage.setItem('tokens', tokenJson);
+    } catch (e) {
+      // Restoring token failed
+      console.log('resetting tokens failed');
+    }
+    setAuthHeaders(tokens);
+    return {
+      success: true,
+      status: response.status,
+    };
+  })
+  .catch((err) => {
+    console.log(err);
+    return {
+      success: false,
+      status: response.status,
+    };
+  });
   console.log('axios homie');
   console.log(res);
   return res;
 };
 
 export const getPortfolio = async () => {
-  console.log('lets see');
+  console.log('STARTING GET PORTFOLIO');
   console.log(API.defaults);
   let res = await API.get('/account/positions')
     .then(async (response) => {
@@ -92,12 +100,13 @@ export const getPortfolio = async () => {
       return {success: true, portfolio: stocks};
     })
     .catch((err) => {
+      console.log(err.response)
       return {success: false, status: err.response.status};
     });
   return res;
 };
 
-const setAuthHeaders = (tokens) => {
+export const setAuthHeaders = (tokens) => {
   API.defaults.headers.common.Authorization = tokens.access;
   //API.defaults.headers.common['X-Refresh-Token'] = tokens.refresh;
   //API.defaults.headers.common['X-Access-Token-Expires'] = tokens.expiry;

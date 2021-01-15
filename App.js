@@ -7,8 +7,9 @@ import {AuthContext} from './AuthContext';
 import {ThemeContext} from './ThemeContext';
 
 import OTPScreen from './Screens/OTPScreen';
-import {loginUser} from './APIConnectors/WealthSimpleConnector';
+import {loginUser, refresh} from './APIConnectors/WealthSimpleConnector';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { setAuthHeaders } from './APIConnectors/WealthSimpleConnector'
 
 const theme = {
   ...DefaultTheme,
@@ -49,21 +50,19 @@ const App = () => {
         case 'SIGN_IN':
           return {
             ...prevState,
-            email: action.email,
-            password: action.password,
-            isSignOut: false,
+            isLoggedIn: false,
           };
         case 'SIGN_IN_W_OTP':
           return {
             ...prevState,
             userAccessToken: action.accessToken,
             otpEntered: true,
-            isSignOut: false,
+            isLoggedIn: true,
           };
         case 'SIGN_OUT':
           return {
             ...prevState,
-            isSignOut: true,
+            isLoggedIn: false,
             userAccessToken: null,
             otpEntered: false,
             email: '',
@@ -77,7 +76,7 @@ const App = () => {
       userAccessToken: null,
       otpEntered: false,
       isLoading: true,
-      isSignOut: false,
+      isLoggedIn: false,
       email: '',
       password: '',
     },
@@ -86,8 +85,35 @@ const App = () => {
   React.useEffect(() => {
     async function asyncStorage() {
       try {
-        let token = JSON.parse(await AsyncStorage.getItem('tokens'));
-      } catch (e) {}
+        console.log("STARTING ISLOGGEDIN")
+        const epochSeconds = parseInt(Date.now() / 1000, 10);
+        console.log(epochSeconds)
+        let token = await JSON.parse(await AsyncStorage.getItem('tokens'));
+        console.log(token)
+        if(epochSeconds >= token.expiry) {
+          try {
+            console.log("token has expired")
+            let response = await refresh();
+            if(response.success) {
+              dispatch({type: 'SIGN_IN_W_OTP'});
+            } else{
+              dispatch({type: 'SIGN_OUT'});
+              //some error?
+            }
+            
+          }
+          catch (e) {
+            return false;
+          }
+        } else {
+            setAuthHeaders(token);
+            dispatch({type: 'SIGN_IN_W_OTP'});
+            console.log('has not expired')
+        }
+      } catch (e) {
+        console.log('first error')
+        dispatch({type: 'SIGN_OUT'});
+      }
     }
     asyncStorage();
   }, []);
@@ -101,7 +127,7 @@ const App = () => {
       console.log(password);
       console.log(response);
       if (response.success) {
-        dispatch({type: 'SIGN_IN', email: email, password: password});
+        dispatch({type: 'SIGN_IN'});
       }
       return response;
     },
@@ -141,10 +167,10 @@ const App = () => {
               headerShown: false,
             }}
             initialRouteName={() => {
-              return state.userAccessToken == null ? 'OTP' : 'StockList';
+              return state.isLoggedIn ? 'StockList' : 'Login';
             }}>
             {Object.entries(
-              state.userAccessToken == null ? screens.auth : screens.user,
+              !state.isLoggedIn ? screens.auth : screens.user,
             ).map(([name, component]) => (
               <Stack.Screen name={name} component={component} />
             ))}
